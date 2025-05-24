@@ -1,0 +1,55 @@
+import sqlite3
+from datetime import datetime
+
+
+class DrinkApp:
+    def __init__(self, db_file="drinks.db"):
+        self.conn = sqlite3.connect(db_file)
+        self.create_tables()
+
+    def create_tables(self):
+        tables = [
+            """CREATE TABLE IF NOT EXISTS alcohol (
+                id INTEGER PRIMARY KEY,
+                name TEXT NOT NULL,
+                strength REAL NOT NULL,
+                quantity INTEGER NOT NULL,
+                price REAL NOT NULL)""",
+            """CREATE TABLE IF NOT EXISTS ingredients (
+                id INTEGER PRIMARY KEY,
+                name TEXT NOT NULL,
+                quantity INTEGER NOT NULL)""",
+            """CREATE TABLE IF NOT EXISTS cocktails (
+                id INTEGER PRIMARY KEY,
+                name TEXT NOT NULL,
+                price REAL NOT NULL)""",
+            """CREATE TABLE IF NOT EXISTS components (
+                id INTEGER PRIMARY KEY,
+                cocktail_id INTEGER NOT NULL,
+                alcohol_id INTEGER,
+                ingredient_id INTEGER,
+                amount INTEGER NOT NULL)""",
+            """CREATE TABLE IF NOT EXISTS sales (
+                id INTEGER PRIMARY KEY,
+                item_type TEXT NOT NULL,
+                item_id INTEGER NOT NULL,
+                quantity INTEGER NOT NULL,
+                total REAL NOT NULL,
+                date TEXT NOT NULL)"""
+        ]
+        for table in tables:
+            self.conn.execute(table)
+        self.conn.commit()
+
+    def add_drink(self, name, strength, quantity, price):
+        self.conn.execute("INSERT INTO alcohol VALUES (NULL,?,?,?,?)",
+                          (name, strength, quantity, price))
+        self.conn.commit()
+
+    def add_ingredient(self, name, quantity):
+        self.conn.execute("INSERT INTO ingredients VALUES (NULL,?,?)", (name, quantity))
+        self.conn.commit()
+
+    def add_cocktail(self, name, price):
+        self.conn.execute("INSERT INTO cocktails VALUES (NULL,?,?)", (name, price))
+        
